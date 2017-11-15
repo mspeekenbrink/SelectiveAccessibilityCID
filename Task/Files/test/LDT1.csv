@@ -1,10 +1,5 @@
-type,word
-word,hoover
-word,snickers
-word,oxford
-word,asda
-nonword,thrauphth
-nonword,flewd
-nonword,lawpth
-nonword,spleace
-nonword,furge
+"block","type","word"
+1,"word","abandon"
+1,"word","absolute"
+1,"word","accurate"
+1,"word","advice"

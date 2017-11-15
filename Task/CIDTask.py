@@ -1,6 +1,6 @@
 import random, math, array, random, csv, os
 from psychopy import core,visual,event
-from numpy import random as nprand
+import numpy as np
 
 class Task:
 
@@ -9,31 +9,32 @@ class Task:
     punishTime = 10
     matchHashMaskLength = True #False #True
 
-    def __init__(self,win,filename,tasknr,taskid,responses):
+    def __init__(self,win,filename,tasknr,taskid,responses,debug):
 
         # Adapted from http://stackoverflow.com/questions/14091387/creating-a-dictionary-from-a-csv-file
-        reader = csv.DictReader(open('Files/LDT' + str(taskid) + '.csv'))
+        if debug:
+            reader = csv.DictReader(open('Files/test/LDT' + str(taskid) + '.csv'))
+        else:
+            reader = csv.DictReader(open('Files/actual/LDT' + str(taskid) + '.csv'))
         result = []
         for row in reader:
             result.append(row)
 
-        # determine whether there are practice items to go first
-        practice_id = []
-        word_id = []
+        # randomize order within blocks
+        block_id = []
         for i in range(len(result)):
-            if result[i]['type'] == 'practice':
-                practice_id.append(i)
-            else:
-                word_id.append(i)
+            block_id.append(result[i]['block'])
+        block_ids = np.sort(np.unique(block_id))
 
-        # randomize order
-        random.shuffle(practice_id)
-        random.shuffle(word_id)
         stimuli = []
-        for i in range(len(practice_id)):
-            stimuli.append(result[practice_id[i]])
-        for i in range(len(word_id)):
-            stimuli.append(result[word_id[i]])
+        for i in range(len(block_ids)):
+            tmp_ids = []
+            for j in range(len(result)):
+                if result[j]['block'] == block_ids[i]:
+                    tmp_ids.append(j)
+            random.shuffle(tmp_ids)
+            for j in range(len(tmp_ids)):
+                stimuli.append(result[tmp_ids[j]])
 
         # self.instructionText = 'Q = ' + responses[0] + ', ' + 'P = ' + responses[1]
         self.stimuli = stimuli
@@ -45,7 +46,6 @@ class Task:
         self.responses = responses
 
         fontFile = os.getcwd() + '/Files/LiberationMono-Regular.ttf'
-        print fontFile + '/n'
         # visuals
         #self.Instructions = visual.TextStim(self.win,text=self.instructionText,pos=(.0,-.8),height=.07,alignVert='center',wrapWidth=1.5)
         self.Stimulus = visual.TextStim(self.win,text="sadjhgsad",pos=(.0,.0),height=.1,alignVert='center',wrapWidth=1.5,fontFiles=[fontFile],font='LiberationMono')
@@ -56,11 +56,11 @@ class Task:
         visualNoiseWidth = 512 # Dimension in pixels of visual noise. Must be a power of 2
         visualNoiseHeight = 128 # Dimension in pixels of visual noise. Must be a power of 2
         noiseSize = 512
-        noiseTexture = nprand.rand(128,128)*2-1
+        noiseTexture = np.random.rand(128,128)*2-1
         self.NoiseMask = visual.GratingStim(win=self.win, tex=noiseTexture, size=(visualNoiseSize,visualNoiseSize), units='pix',interpolate=True)
         self.Mask = self.HashMask
         self.Question = visual.TextStim(self.win,text="Type the word here",pos=(.0,.3),height=.08,alignVert='center',wrapWidth=1.5)
-        self.Feedback = visual.TextStim(self.win,text="",pos=(.0,.3),height=.08,alignVert='center',alignHoriz='center',wrapWidth=1.5)
+        self.Feedback = visual.TextStim(self.win,text="",pos=(.0,.3),height=.08,alignVert='center',wrapWidth=1.5)
         self.Response = visual.TextStim(self.win,text="",pos=(.0,.0),height=.08,alignVert='center',wrapWidth=1.5)
         self.fixation = visual.ShapeStim(win,
             units='pix',
@@ -137,7 +137,7 @@ class Task:
                     'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
                     #'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
                     #'comma','period','space','exclamation','question',
-                    'backspace'])
+                    'backspace',])
                     for l in letterlist:
                         #if key isn't backspace, add key pressed to the string
                         if l !='backspace':
@@ -152,6 +152,7 @@ class Task:
                     self.Response.draw()
                     #self.Instructions.draw()
                     self.win.flip()
+                    #print text
 
                 response_RT = self.trialClock.getTime() - id_RT
                 # get response

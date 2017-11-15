@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import random, csv
+import random, csv, os
 from psychopy import visual, event, core, data, gui, misc
 import numpy as np
 import Instructions, AnchorTask, CIDTask, SpanTask
@@ -39,11 +39,11 @@ while(not ok):
 
 
 # setup data file
-fileName = 'Data/' + 'Subject' + str(expInfo['subject']) + '_' + expInfo['date'] + '.csv'
+fileName = os.getcwd() + '/Data/' + 'Subject' + str(expInfo['subject']) + '_' + expInfo['date'] + '.csv'
 debug = expInfo['debug']
 # Read in counterbalancing etc.
 # Adapted from http://stackoverflow.com/questions/14091387/creating-a-dictionary-from-a-csv-file
-reader = csv.DictReader(open('Files/ExpStructure.csv'))
+reader = csv.DictReader(open(os.getcwd() + '/Files/ExpStructure.csv'))
 result = []
 for row in reader:
     if row['id'] == str(expInfo['subject']):
@@ -61,11 +61,11 @@ for i in [1]:
 
 dataFile = open(fileName, 'w') #a simple text file with 'comma-separated-values'
 dataFile.write('subject = ' + str(expInfo['subject']) + "; date = " + str(expInfo['date']) + '\n')
-dataFile.write('taskOrder = ' + str(taskOrder) + "; responses (Q/blue,P/yellow) = " + str(responses) + '\n')
+dataFile.write('taskOrder = ' + str(taskOrder) + "; responses (Q,P) = " + str(responses) + '\n')
 dataFile.close()
 
 #create a window to draw in
-myWin =visual.Window(resolution, allowGUI=False, bitsMode=None, units='norm', color=(0,0,0))
+myWin =visual.Window(resolution, winType='pyglet',allowGUI=False,units='norm', color=(0,0,0))
 
 instructions = visual.TextStim(myWin,pos=[0,0],text="",height=.08,alignHoriz='center',wrapWidth=1.2)
 CIDtext = 'Place your index fingers on the space bar now. \n\n Respond as soon as you recognize the word.'
@@ -113,7 +113,7 @@ for tsk in range(4):
         core.wait(interTaskTime-.5)
         myWin.flip()
         core.wait(0.5)
-    task = CIDTask.Task(myWin,fileName,tsk+1,taskOrder[tsk],responses)
+    task = CIDTask.Task(myWin,fileName,tsk+1,taskOrder[tsk],responses,debug)
     task.Run()
     core.wait(interTaskTime-.5)
     myWin.flip()
