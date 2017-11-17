@@ -7,7 +7,7 @@ import Instructions, AnchorTask, CIDTask, SpanTask
 # some variables
 interTaskTime = 3
 interTaskTime2 = 6
-resolution = (1600,900)
+resolution = (1920,1080)
 responses = ['yes','no']
 taskAnchors = [['15'],['2','25']]
 
@@ -80,23 +80,12 @@ txt = 'This is the end of the first round of tasks. There will be one more round
 txt += 'If you have any questions, ask the experimenter now. '
 txt += 'Take a short break if you want to. Press any key to continue to the next block of the experiment.'
 BetweenText.append(txt)
-txt = 'This is the end of the second round of tasks. There will be two more rounds just like this one. '
-txt += 'In the "DOES IT HAVE MEANING?" task, please respond as quickly as possible. '
-txt += '\n\nThe blue key will always correspond to "' + responses[0]
-txt += '" and the yellow key to "' + responses[1] + '". Make sure your index fingers rest on these keys.\n\n'
-txt += 'Take a short break if you want to. Press any key to continue to the next block of the experiment.'
-BetweenText.append(txt)
-txt = 'This is the end of the third round of tasks. There will be one more round just like this one. '
-txt += 'In the "DOES IT HAVE MEANING?" task, please respond as quickly as possible. '
-txt += '\n\nThe blue key will always correspond to "' + responses[0]
-txt += '" and the yellow key to "' + responses[1] + '". Make sure your index fingers rest on these keys.\n\n'
-txt += 'Take a short break if you want to. Press any key to continue to the next block of the experiment.'
-BetweenText.append(txt)
+
 if(not debug):
     instr = Instructions.Instructions(myWin,responses)
     instr.Run()
 
-for tsk in range(4):
+for tsk in range(2):
     task = AnchorTask.Task(myWin,fileName,tsk+1,comparativeQuestions[taskOrder[tsk]-1],units[taskOrder[tsk]-1],comparativeOptions[taskOrder[tsk]-1],1)
     task.Run()
     if tsk == 0:
@@ -120,7 +109,7 @@ for tsk in range(4):
     core.wait(0.5)
     task = AnchorTask.Task(myWin,fileName,tsk+1,absoluteQuestions[taskOrder[tsk]-1],units[taskOrder[tsk]-1],comparativeOptions[taskOrder[tsk]-1],2)
     task.Run()
-    if tsk < 3:
+    if tsk < 1:
         instructions.setText(SpanText)
         instructions.draw()
         myWin.flip()
